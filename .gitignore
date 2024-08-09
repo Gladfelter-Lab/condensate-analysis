@@ -1,0 +1,4 @@
+#Ignore test datafiles for now
+*.tif
+*.czi
+*.nd2
