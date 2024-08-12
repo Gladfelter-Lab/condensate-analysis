@@ -2,3 +2,4 @@
 *.tif
 *.czi
 *.nd2
+__pycache__/*
