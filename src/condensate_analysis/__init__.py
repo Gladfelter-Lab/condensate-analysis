@@ -5,5 +5,3 @@ __authors__ = "Alex Crocker, Grace McLaughlin, Vita Zhang, Wilton Snead, Sierra 
 from .read import read_image
 from .mask import mask_image
 from .featurize import featurize
-
-test
