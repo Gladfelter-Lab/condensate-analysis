@@ -6,16 +6,28 @@ from skimage.feature import peak_local_max
 import numpy as np
 import os
 import czifile
+import json
 
 #example of configuration file (json)
-#  "config_parameters": [
+#  "config_parameters":[] 
 #     {
 #       "threshold_method": "otzu",
-#       "watershed_binary": False,
+#       "is_watershed": False,
 #       "stacks_option": "maxproject",
-#       "background_subtraction_binary"=True
-#     }]
+#       "is_background_subtraction"=True
+#     }
+#]
 
+supported_configuration_parameters={
+    "threshold_method": ["otzu"],
+    "is_watershed": [True,False],
+    "stacks_option": ["fullstack","brightest","maxproject"],
+    "is_background_subtraction":[True,False]}
+#default parameters if none is specified 
+default_threshold_method="otzu"
+default_is_watershed=False
+default_stacks_opiton="maxprojection"
+default_is_background_subtraction=True
 
 # Aim to reduce variety of dependencies imported
 
@@ -57,19 +69,16 @@ def print_image_info(image_raw_array):
     print("dtype: {}".format(image_raw_array.dtype))
     print("range: ({}, {})".format(np.min(image_raw_array), np.max(image_raw_array)))
 
-def configure (configuration_file):
-    #parameters to specify, can all become read in from the configuration file eventually
-    threshold_method_list=["otzu"]
-    threshold_method="otzu"
-    #watershed True/False
-    watershed_binary=False
-    stacks_option_list=["fullstack","brightest","maxproject"]
-    stacks_opiton=""
-    #background_subtraction True/False
-    background_subtraction_binary=True
+def configure (configuration_file)
+    with open('config.json', 'r') as config_file:
+        config_data = json.load(config_file)
+    config_params = config_data['config_parameters'][0]
+    threshold_method = config_params.get('threshold_method', default_threshold_method)
+    is_watershed = config_params.get('is_watershed', default_is_watershed)
+    stacks_option = config_params.get('stacks_option', default_stacks_opiton)
+    is_ackground_subtraction = config_params.get('is_background_subtraction', default_is_background_subtraction)
 
-
-def mask_image(image_raw_array, threshold_method=threshold_method, watershed=watershed_parameter):
+def mask_image(image_raw_array, threshold_method=threshold_method, watershed=is_watershed):
     thresh = apply_threshold(image_raw_array, threshold_method)
     binary = image_raw_array > thresh
     no_edge_binary = segmentation.clear_border(binary)
