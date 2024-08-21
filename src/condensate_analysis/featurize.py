@@ -1,4 +1,6 @@
 import pandas as pd
+from skimage.measure import regionprops
+
 def featurize(img, mask):
     regionprops = ski.measure.regionprops(mask, intensity_image=img)
     supported_features_list = []
