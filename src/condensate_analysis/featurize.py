@@ -40,5 +40,3 @@ def featurize(img, mask):
         # extract features
         # return table
     return features
-
-test
