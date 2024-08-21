@@ -15,7 +15,13 @@ import numpy as np
 def mask_image(image, threshold="otsu", watershed=False, background_sub=False, clear_border=True):
     """Create and return a 2D or 3D mask from an input image.
 
-    threshold_method: 
+    image: ndarray of two or three dimensions
+    threshold: integer value specifying threshold or name of method to determine threshold ("otsu")
+    watershed: boolean for whether touching condensates should be separated via watershed
+    background_sub: False or "median", which subtracts median pixel value, are currently supported
+    clear_border: boolean for whether condensates touching image edges should be included in mask. 
+        May need to use False with 3D images right now since blobs often touch top or bottom of Z-stack.
+    
     """
     if background_sub:
         image = _apply_background(image, background_sub)
