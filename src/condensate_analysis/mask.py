@@ -12,10 +12,14 @@ import numpy as np
 
 # Consult Wilton on whether to use single value or also allow other method to be specified. 
 
-def mask_image(image, threshold_method="otsu", watershed=False, background_sub=False, clear_border=True):
+def mask_image(image, threshold="otsu", watershed=False, background_sub=False, clear_border=True):
+    """Create and return a 2D or 3D mask from an input image.
+
+    threshold_method: 
+    """
     if background_sub:
         image = _apply_background(image, background_sub)
-    thresh = _apply_threshold(image, threshold_method)
+    thresh = _get_threshold(image, threshold)
     binary = image > thresh
     # Need to replace clear_border option with new clear_border function capable only ONLY clearing XY border, not Z border. 
     if clear_border:
@@ -25,9 +29,11 @@ def mask_image(image, threshold_method="otsu", watershed=False, background_sub=F
         mask = _apply_watershed(binary)
     return mask
 
-def _apply_threshold(image_array, method):
+def _get_threshold(image_array, method):
     if method == "otsu":
         thresh = threshold_otsu(image_array)
+    if type(method)==int or type(method)==float:
+        thresh = method
     else:
         print(f"Warning: threshold method specified by user is not one of the supported method, using deafult threshold method otzu method instead.")
         thresh = threshold_otsu(image_array)
