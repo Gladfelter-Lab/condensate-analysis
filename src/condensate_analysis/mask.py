@@ -12,13 +12,15 @@ import numpy as np
 
 # Consult Wilton on whether to use single value or also allow other method to be specified. 
 
-def mask_image(image, threshold_method="otsu", watershed=False, background_sub=False):
+def mask_image(image, threshold_method="otsu", watershed=False, background_sub=False, clear_border=True):
     if background_sub:
         image = _apply_background(image, background_sub)
     thresh = _apply_threshold(image, threshold_method)
     binary = image > thresh
-    no_edge_binary = segmentation.clear_border(binary)
-    mask = label(no_edge_binary)
+    # Need to replace clear_border option with new clear_border function capable only ONLY clearing XY border, not Z border. 
+    if clear_border:
+        binary = segmentation.clear_border(binary)
+    mask = label(binary)
     if watershed:
         mask = _apply_watershed(binary)
     return mask
@@ -45,6 +47,6 @@ def _apply_watershed(binary):
 
 def _apply_background(image, method):
     if method=="median":
-        background = median(image)
+        background = np.median(image)
         subtracted_image = image - background
     return subtracted_image
