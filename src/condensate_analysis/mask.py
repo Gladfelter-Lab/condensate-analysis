@@ -1,6 +1,7 @@
 from skimage.filters import threshold_otsu
 from skimage import segmentation
 from skimage.measure import label
+from skimage.color import label2rgb
 from scipy import ndimage as ndi
 from skimage.feature import peak_local_max
 import numpy as np
@@ -47,7 +48,8 @@ def mask_image(
         mask = _apply_watershed(binary, watershed)
     else:
         mask = label(binary)
-    return mask
+    rgb_mask  =label2rgb(mask, bg_label=0)
+    return mask, rgb_mask
 
 
 def _get_stack(image_array, stack):
@@ -109,7 +111,7 @@ def _apply_watershed(binary, ws_size):
     mask[tuple(coords.T)] = True
     markers, _ = ndi.label(mask)
     labels = segmentation.watershed(-distance, markers, mask=binary)
-    mask = label
+    # mask = label ##gm: not sure what this is doing, commented it out
     return labels
 
 
