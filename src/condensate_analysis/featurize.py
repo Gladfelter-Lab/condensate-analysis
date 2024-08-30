@@ -3,20 +3,23 @@ import numpy as np
 from skimage.measure import regionprops, regionprops_table
 
 
-def featurize(img, mask, features, feature_table_output_path=""):
+def featurize(img, mask, feature_options, export_path=""):
     ### list of built-in properties: https://scikit-image.org/docs/stable/api/skimage.measure.html#skimage.measure.regionprops
     
+    ### features that are always included:
     properties = ['label']
     extra_properties = []
     
-    if 'size' in features:
+    ### features related to size:
+    if feature_options['size']:
         properties = properties + ['area', 'num_pixels']
     
-    if 'intensity' in features:
+    ### features related to intensity:
+    if feature_options['intensity']:
         properties = properties + ['max_intensity', 'mean_intensity', 'min_intensity']
 
-        def total_intensity(region, intensities):
-            return np.sum(intensities[region]) 
+        def total_intensity(region, intensities): #we could leave smaller functions inside and define larger ones
+            return np.sum(intensities[region])    #down below, or we could move all of them below
         
         def std_intensity(region, intensities): 
             return np.std(intensities[region])
@@ -24,11 +27,17 @@ def featurize(img, mask, features, feature_table_output_path=""):
         extra_properties.append(total_intensity)
         extra_properties.append(std_intensity)
     
-    if 'shape' in features:
+    ### features related to shape:
+    if feature_options['shape']:
         properties = properties + ['centroid', 'axis_major_length']
 
+    ### creating table of features:
     feature_table = pd.DataFrame(regionprops_table(mask, img, properties=properties, 
                                                    extra_properties=extra_properties))
+
+    ### exporting csv features to specified loccation:
+    if export_path:
+        feature_table.to_csv(export_path, header=True, index=False, mode="w")
 
     return feature_table
     
