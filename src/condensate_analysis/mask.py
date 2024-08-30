@@ -53,6 +53,14 @@ def mask_image(
 
 
 def _get_stack(image_array, stack):
+
+    #gm: Right now there is a lot being computed here that isn't necessarily being 
+    #    used. Also we should try to use numpy functions instead of python loops when 
+    #    ever possible (for example, I think we can do np.mean across the frame axis 
+    #    instead of the for loop). I think we should talk through on a higher level what 
+    #    we want _get_stack to do, then we can figure out how to organize this
+
+
     protein = image_array[1, :]
     rna = image_array[0, :]
     # max projections
