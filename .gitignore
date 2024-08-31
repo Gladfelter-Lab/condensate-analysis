@@ -3,3 +3,4 @@
 *.czi
 *.nd2
 src/condensate_analysis/__pycache__/
+.DS_Store
