@@ -21,7 +21,6 @@ def mask_image(
     stack=False,
     threshold="otsu",
     watershed=False,
-    background_sub=False,
     clear_border=True,
 ):
     """Create and return a 2D or 3D mask from an input image.
@@ -30,7 +29,6 @@ def mask_image(
     - stack: False, "protein_max_project","rna_max_project","protein_brightest_frame","rna_brightest_frame"
     - threshold: integer value specifying threshold or name of method to determine threshold ("otsu")
     - watershed: False or value specifying watershed footprint size.
-    - background_sub: False or "median", which subtracts median pixel value, are currently supported
     - clear_border: boolean for whether condensates touching image edges should be included in mask.
         May need to use False with 3D images right now since blobs often touch top or bottom of Z-stack.
 
@@ -44,11 +42,11 @@ def mask_image(
     # Need to replace clear_border option with new clear_border function capable only ONLY clearing XY border, not Z border.
     if watershed:
         mask = _apply_watershed(binary, watershed)
-    if clear_border:
-        mask = segmentation.clear_border(mask)
     else:
         mask = label(binary)
-    rgb_mask  = label2rgb(mask, bg_label=0)
+        rgb_mask  = label2rgb(mask, bg_label=0)
+    if clear_border:
+        mask = segmentation.clear_border(mask)
     return mask, rgb_mask
 
 
@@ -103,7 +101,6 @@ def _get_threshold(image_array, method):
 def _apply_watershed(binary, ws_size):
     distance = ndi.distance_transform_edt(binary)
     distance = ndi.gaussian_filter(distance, 5)
-    # Consider allowing user defined watershed distance. watershed=value accepted as well as False (none) and True (auto)
     dims = len(binary.shape)
     coords = peak_local_max(
         distance, footprint=np.ones([ws_size] * dims), labels=binary
@@ -115,9 +112,3 @@ def _apply_watershed(binary, ws_size):
     # mask = label ##gm: not sure what this is doing, commented it out
     return labels
 
-
-def _apply_background(image, method):
-    if method == "median":
-        background = np.median(image)
-        subtracted_image = image - background
-    return subtracted_image
