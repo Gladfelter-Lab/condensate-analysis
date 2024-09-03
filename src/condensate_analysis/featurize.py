@@ -85,7 +85,7 @@ dictionary_feature_to_properties = {
     "custom_all": ["intensity_total"],
 }
 
-def featurize(img, mask, features, feature_table_output_path=""):
+def featurize_image(img, mask, features, feature_table_output_path=False):
     properties = ["label"]  # always want to include label
     for feature in features:
         properties += dictionary_feature_to_properties[feature]
