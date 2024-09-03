@@ -18,7 +18,7 @@ import numpy as np
 
 def mask_image(
     image,
-    stack="protein_max_project",
+    stack=False,
     threshold="otsu",
     watershed=False,
     background_sub=False,
@@ -42,13 +42,13 @@ def mask_image(
     thresh = _get_threshold(image, threshold)
     binary = image > thresh
     # Need to replace clear_border option with new clear_border function capable only ONLY clearing XY border, not Z border.
-    if clear_border:
-        binary = segmentation.clear_border(binary)
     if watershed:
         mask = _apply_watershed(binary, watershed)
+    if clear_border:
+        mask = segmentation.clear_border(mask)
     else:
         mask = label(binary)
-    rgb_mask  =label2rgb(mask, bg_label=0)
+    rgb_mask  = label2rgb(mask, bg_label=0)
     return mask, rgb_mask
 
 
@@ -109,7 +109,6 @@ def _apply_watershed(binary, ws_size):
         distance, footprint=np.ones([ws_size] * dims), labels=binary
     )
     mask = np.zeros(distance.shape, dtype=bool)
-    print(mask.shape)
     mask[tuple(coords.T)] = True
     markers, _ = ndi.label(mask)
     labels = segmentation.watershed(-distance, markers, mask=binary)
