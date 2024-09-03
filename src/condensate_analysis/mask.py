@@ -53,38 +53,32 @@ def mask_image(
 
 
 def _get_stack(image_array, stack):
-
     #gm: Right now there is a lot being computed here that isn't necessarily being 
     #    used. Also we should try to use numpy functions instead of python loops when 
     #    ever possible (for example, I think we can do np.mean across the frame axis 
     #    instead of the for loop). I think we should talk through on a higher level what 
     #    we want _get_stack to do, then we can figure out how to organize this
-
-
     protein = image_array[1, :]
     rna = image_array[0, :]
-    # max projections
-    protein_max = np.max(protein, axis=0)
-    rna_max = np.max(rna, axis=0)
     # get brightest single frames (based on protein or rna ch intensity)
     #do we need other options such as (give rna channel where correponding protein channel is the brightest frame, part of Wil's code)
-    nframes = len(protein)
-    frame_mean_protein = []
-    frame_mean_rna = []
-    for frame in range(nframes):
-        frame_mean_protein.append(np.mean(protein[frame, :, :]))
-        frame_mean_rna.append(np.mean(rna[frame, :, :]))
-    protein_brightest_frame_index = frame_mean_protein.index(max(frame_mean_protein))
-    protein_brightest_frame = protein[protein_brightest_frame_index, :, :]
-    rna_brightest_frame_index = frame_mean_rna.index(max(frame_mean_rna))
-    rna_brightest_frame = rna[rna_brightest_frame_index, :, :]
     if stack == "protein_max_project":
+         # protein_max_project
+        protein_max = np.max(protein, axis=0)
         image_array = protein_max
     elif stack == "rna_max_project":
+        # rna_max_project
+        rna_max = np.max(rna, axis=0)
         image_array = rna_max
     elif stack == "protein_brightest_frame":
+        frame_mean_protein = np.mean(protein, axis=(1, 2))
+        protein_brightest_frame_index = np.argmax(frame_mean_protein)
+        protein_brightest_frame = protein[protein_brightest_frame_index, :, :]
         image_array = protein_brightest_frame
     elif stack == "rna_brightest_frame":
+        frame_mean_rna = np.mean(rna, axis=(1, 2))
+        rna_brightest_frame_index = np.argmax(frame_mean_rna)
+        rna_brightest_frame = rna[rna_brightest_frame_index, :, :]
         image_array = rna_brightest_frame
     else:
         print(
