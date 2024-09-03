@@ -35,8 +35,6 @@ def mask_image(
     """
     if stack:
         image = _get_stack(image, stack)
-    if background_sub:
-        image = _apply_background(image, background_sub)
     thresh = _get_threshold(image, threshold)
     binary = image > thresh
     # Need to replace clear_border option with new clear_border function capable only ONLY clearing XY border, not Z border.
@@ -44,7 +42,7 @@ def mask_image(
         mask = _apply_watershed(binary, watershed)
     else:
         mask = label(binary)
-        rgb_mask  = label2rgb(mask, bg_label=0)
+    rgb_mask  = label2rgb(mask, bg_label=0)
     if clear_border:
         mask = segmentation.clear_border(mask)
     return mask, rgb_mask
