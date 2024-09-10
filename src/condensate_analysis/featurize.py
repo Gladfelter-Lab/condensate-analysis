@@ -3,7 +3,7 @@ import numpy as np
 from skimage.measure import regionprops, regionprops_table
 
 dictionary_feature_to_properties = {
-    "default": ["label", "slice", "area", "centroid", "mean_intensity", "eccentricity"],
+    "default": ["label", "slice", "area", "centroid", "intensity_mean", "eccentricity"],
     "size": ["area", "num_pixels"],
     "shape": ["centroid", "axis_major_length"],
     "area": ["area", "area_bbox", "area_convex", "area_filled"],
