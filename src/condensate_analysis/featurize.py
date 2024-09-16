@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from skimage.measure import regionprops, regionprops_table
+import feature_dict
 
 def featurize_image(img, mask, features=["default"], custom_features=None, feature_table_output_path=False):
     """
