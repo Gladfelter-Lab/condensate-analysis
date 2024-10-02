@@ -1,3 +1,6 @@
+import numpy as np 
+from scipy import ndimage
+
 dictionary_feature_to_properties = {
     "default": ["label", "slice", "area", "centroid", "intensity_mean", "eccentricity"],
     "size": ["area", "num_pixels"],
@@ -78,12 +81,30 @@ dictionary_feature_to_properties = {
         "slice",
         "solidity",
     ],
-    "custom_all": ["intensity_total"],
+   "custom_all": ["intensity_total", "area", "centroid_info"],
 }
 
 # Write custom features here
 def intensity_total(region, intensities):
     return np.sum(intensities[region])
+def centroid_info(mask, img):
+    point = ndimage.center_of_mass(mask)
+    round_point = [ int(round(elem, 0)) for elem in point ]
+    if len(round_point) == 2 : 
+        intensity = int(img[round_point[0], round_point[1]])
+                       #img[round_point[0]+1, round_point[1]] +
+                       #img[round_point[0], round_point[1]+1]+
+                       #img[round_point[0]-1, round_point[1]]+
+                       #img[round_point[0], round_point[1]-1]/ 5)
+    elif len(round_point) == 3:
+        intensity = int(img[round_point[0], round_point[1], round_point[2]])
+                       #img[round_point[0], round_point[1]+1, round_point[2]] +
+                       #img[round_point[0], round_point[1]-1, round_point[2]] +
+                       #img[round_point[0], round_point[1], round_point[2]+1] +
+                       #img[round_point[0], round_point[1], round_point[2]-1]/5)
+    return intensity
+
 
 # vz:can turn this into a class/decorator situation so that the dictionary is automatically generated when developer or user add new custom property
-dictionary_custom_property_to_function = {"intensity_total": intensity_total}
+dictionary_custom_property_to_function = {"intensity_total": intensity_total, "centroid_info":centroid_info}
+
